@@ -5,7 +5,7 @@ function Map:init()
 
 end
 
-function Map:update()
+function Map:update(dt)
 
 end
 
