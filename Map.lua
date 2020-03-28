@@ -7,6 +7,7 @@ Map = Class{}
 TILE_BRICK = 1
 TILE_EMPTY = 4 
 
+local SCROLL_SPEED = 62
 
 -- the constuctor for our map object
 function Map:init()
@@ -17,6 +18,9 @@ function Map:init()
     self.mapWidth = 30
     self.mapHeight = 28
     self.tiles = {}
+
+    self.camX = 0
+    self.camY = 0
 
     -- generate a quad (individual frame / sprite) for each tile
     self.tileSprites = generateQuads(self.spritesheet, self.tileWidth, self.tileHeight)
@@ -35,6 +39,10 @@ function Map:init()
         end
     end
 
+end
+
+function Map:update(dt)
+    self.camX = self.camX + SCROLL_SPEED * dt
 end
 
 -- returns an integer for the title at the given x-y coordinate

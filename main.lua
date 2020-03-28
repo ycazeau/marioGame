@@ -45,14 +45,16 @@ function love.keypressed(key)
 end
 
 -- called every frame, with dt passed in as delta in time since last frame
-function love:update(dt)
-
+function love.update(dt)
+    map:update(dt)
 end
 
 -- called each frame, used to render to the screen
 function love.draw()
     -- begin virtual resolution drawing
     push:apply('start')
+
+    love.graphics.translate(math.floor(-map.camX), math.floor(-map.camY))
 
     -- clear the screen using Mario backgroung blue color
     love.graphics.clear(108/255, 140/255, 255/255, 255/255)
