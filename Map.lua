@@ -1,10 +1,14 @@
 
+--[[ contains tile data and necessary code for rendering a tile]]
+require 'Util'
+
 Map = Class{}
 
 TILE_BRICK = 1
 TILE_EMPTY = 4 
 
 
+-- the constuctor for our map object
 function Map:init()
 
     self.spritesheet = love.graphics.newImage('graphics/spritesheet.png')
@@ -14,6 +18,7 @@ function Map:init()
     self.mapHeight = 28
     self.tiles = {}
 
+    -- generate a quad (individual frame / sprite) for each tile
     self.tileSprites = generateQuads(self.spritesheet, self.tileWidth, self.tileHeight)
 
     -- Filling the map with empty Tiles   
@@ -32,24 +37,25 @@ function Map:init()
 
 end
 
-function Map:setTile(x, y, tile)
-    self.tiles[(y - 1) * self.mapWidth + x] = tile
-end
-
+-- returns an integer for the title at the given x-y coordinate
 function Map:getTile(x, y)
     return self.tiles[(y - 1) * self.mapWidth + x]
 end
 
-function Map:update(dt)
-
+-- sets a title at the given x-y coordinate to an integer value
+function Map:setTile(x, y, tile)
+    self.tiles[(y - 1) * self.mapWidth + x] = tile
 end
 
+-- renders our map to the screen, to be called by main's render
 function Map:render()
 
     for y = 1, self.mapHeight do
-        for x = 1, self.mapWidth do
-            love.graphics.draw(self.spritesheet, self.tileSprites [self:getTile(x, y)],
+        for x = 1, self.mapWidth do 
+            if self:getTile(x, y) ~= TILE_EMPTY then
+            love.graphics.draw(self.spritesheet, self.tileSprites [self: getTile(x, y)],
             (x - 1 ) * self.tileWidth, (y -1) * self.tileHeight)
+            end
         end
     end
 end
