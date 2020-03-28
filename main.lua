@@ -32,7 +32,6 @@ end
 function love.draw()
     push:apply('start')
     love.graphics.clear(108/255, 140/255, 255/255, 255/255)
-    love.graphics.print(" Welcome to Super Mario !")
     map:render()
     push:apply('end')
 end
