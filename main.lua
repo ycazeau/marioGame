@@ -54,7 +54,7 @@ function love.draw()
     -- begin virtual resolution drawing
     push:apply('start')
 
-    love.graphics.translate(math.floor(-map.camX), math.floor(-map.camY))
+    love.graphics.translate(math.floor(-map.camX + 0.5), math.floor(-map.camY + 0.5))
 
     -- clear the screen using Mario backgroung blue color
     love.graphics.clear(108/255, 140/255, 255/255, 255/255)
