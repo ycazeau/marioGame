@@ -14,11 +14,14 @@ VIRTUAL_HEIGHT = 243
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
 
--- an object to contain our map data
-map = Map()
 
  -- makes initialization of all objects and data needed by the program
 function love.load()
+
+    math.randomseed(os.time())
+
+    -- an object to contain our map data
+    map = Map()
 
    -- makes upscalling look pixel-y instead of blurry
     love.graphics.setDefaultFilter('nearest' , 'nearest')
