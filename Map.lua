@@ -2,6 +2,8 @@
 --[[ contains tile data and necessary code for rendering a tile]]
 require 'Util'
 
+require 'Player'
+
 Map = Class{}
 
 TILE_BRICK = 1
@@ -40,6 +42,8 @@ function Map:init()
     -- camera offset
     self.camX = 0
     self.camY = -3
+
+    self.player = Player(self)
 
     -- generate a quad (individual frame / sprite) for each tile
     self.tileSprites = generateQuads(self.spritesheet, self.tileWidth, self.tileHeight)
@@ -138,12 +142,10 @@ function Map:init()
 end
 
 
-
-
 -- function to update camera offset with delta time
 function Map:update(dt)
 
-    if love.keyboard.isDown('w') then 
+    if love.keyboard.isDown('left') then 
         -- up movement
         self.camY = math.max(0, math.floor(self.camY -dt * SCROLL_SPEED))
     elseif love.keyboard.isDown('a') then
@@ -155,8 +157,9 @@ function Map:update(dt)
     elseif love.keyboard.isDown('d') then
          -- right movement
          self.camX = math.min(self.mapWidthPixels - VIRTUAL_WIDTH, math.floor(self.camX + dt * SCROLL_SPEED))
-    
     end
+
+    self.player:update(dt)
    
 end
 
@@ -181,4 +184,6 @@ function Map:render()
             end
         end
     end
+
+    self.player:render()
 end
