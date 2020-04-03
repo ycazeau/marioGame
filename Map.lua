@@ -6,6 +6,7 @@ require 'Player'
 
 Map = Class{}
 
+-- bricks tiles
 TILE_BRICK = 1
 TILE_EMPTY = -1
 
@@ -23,6 +24,7 @@ MUSHROOM_BOTTOM = 11
 
 -- jump block
 JUMP_BLOCK = 5
+JUMP_BLOCK_HIT = 9
 
 -- a speed to multiply delta time to scrool map: smooth value
 local SCROLL_SPEED = 62
@@ -144,11 +146,17 @@ end
 
 -- function to update camera offset with delta time
 function Map:update(dt)
-    self.camX = math.max(0, math.min(self.player.x - VIRTUAL_WIDTH / 2,
-    math.min(self.mapWidthPixels - VIRTUAL_WIDTH, self.player.x)))
 
     self.player:update(dt)
+
+    self.camX = math.max(0, math.min(self.player.x - VIRTUAL_WIDTH / 2,
+    math.min(self.mapWidthPixels - VIRTUAL_WIDTH, self.player.x)))
    
+end
+
+-- gets the tile type at the given pixel coordinate
+function Map:tileAt(x, y)
+    return self.getTile(math.floor(x / self.tileWidth) + 1, math.floor(y / self.tileHeight) + 1)
 end
 
 -- returns an integer for the title at the given x-y coordinate
