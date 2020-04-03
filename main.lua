@@ -29,9 +29,10 @@ function love.load()
     -- sets up virtual screen resolution for an authentic retro feeel
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
         fullcreen = false,
-        resizable = false,
-        vsync = true
+        resizable = true,
     })
+
+    love.keyboard.keysPressed = {}
     
 end
 
@@ -45,11 +46,19 @@ function love.keypressed(key)
     if key == 'escape' then
         love.event.quit()
     end
+
+    love.keyboard.keysPressed[key] = true
+end
+
+function love.keyboard.wasPressed(key)
+    return love.keyboard.keysPressed[key]
 end
 
 -- called every frame, with dt passed in as delta in time since last frame
 function love.update(dt)
     map:update(dt)
+        
+    love.keyboard.keysPressed = {}
 end
 
 -- called each frame, used to render to the screen
