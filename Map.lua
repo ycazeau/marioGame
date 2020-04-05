@@ -34,12 +34,16 @@ function Map:init()
 
     self.spritesheet = love.graphics.newImage('graphics/spritesheet.png')
     self.sprites = generateQuads(self.spritesheet, 16, 16)
+    self.music = love.audio.newSource('sounds/music.wav', 'static')
 
     self.tileWidth = 16
     self.tileHeight = 16
     self.mapWidth = 30
     self.mapHeight = 28
     self.tiles = {}
+
+    -- applies positive Y influence on anything affected
+    self.gravity = 15
 
     -- camera offset
     self.camX = 0
@@ -141,6 +145,10 @@ function Map:init()
         end
     end
 
+    -- start the background music
+    self.music:setLooping(true)
+    self.music:setVolume(0.25)
+    self.music:play()
 end
 
 -- return whether a given tile is collidable

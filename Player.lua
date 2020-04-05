@@ -19,6 +19,13 @@ function Player:init(map)
 
     self.map = map  
     self.texture = love.graphics.newImage('graphics/blue_alien.png')
+
+    self.sounds = {
+        ['jump'] = love.audio.newSource('sounds/jump.wav', 'static'),
+        ['hit'] = love.audio.newSource('sounds/hit.wav', 'static'),
+        ['coin'] = love.audio.newSource('sounds/coin.wav', 'static')
+    }
+
     self.frames = generateQuads(self.texture, 16, 20)
 
     self.state = 'idle'
@@ -57,6 +64,7 @@ function Player:init(map)
                 self.dy = -JUMP_VELOCITY
                 self.state = 'jumping'
                 self.animation = self.animations['jumping']
+                self.sounds['jump']:play()
             elseif love.keyboard.isDown('a') then
                 self.dx = -MOVE_SPEED
                 self.animation = self.animations['walking']
@@ -145,28 +153,48 @@ function Player:update(dt)
     self.animation:update(dt)
     --self.currentFrame = self.animation:getCurrentFrame()
     self.x = self.x + self.dx * dt
+    self:calculateJumps()
     self.y = self.y + self.dy * dt
 
-    --[[if we have negative y velococity (jumping), check if we collide
-    with any blocks above us]]
+    
+end
+
+-- jumping and block hitting logic
+function Player:calculateJumps()
+    
+    -- if we have negative y velocity (jumping), check if we collide
+    -- with any blocks above us
     if self.dy < 0 then
-        if self.map:tileAt(self.x, self.y).tile ~= TILE_EMPTY or  
-           self.map:tileAt(self.x + self.width - 1, self.y) ~= TILE_EMPTY then
+        if self.map:tileAt(self.x, self.y).id ~= TILE_EMPTY or
+            self.map:tileAt(self.x + self.width - 1, self.y).id ~= TILE_EMPTY then
             -- reset y velocity
             self.dy = 0
 
-            -- change block to differant block
-            if self.map:tileAt(self.x, self.y) == JUMP_BLOCK then
+            -- change block to different block
+            local playCoin = false
+            local playHit = false
+            if self.map:tileAt(self.x, self.y).id == JUMP_BLOCK then
                 self.map:setTile(math.floor(self.x / self.map.tileWidth) + 1,
-                math.floor(self.y / self.map.tileHeight) + 1, JUMP_BLOCK_HIT)
+                    math.floor(self.y / self.map.tileHeight) + 1, JUMP_BLOCK_HIT)
+                playCoin = true
+            else
+                playHit = true
             end
-            if self.map:tileAt(self.x + self.width - 1, self.y) == JUMP_BLOCK then
-                self.map:setTile(math.floor(self.x + self.width - 1) / self.map.tileWidth + 1,
-                math.floor(self.y / self.map.tileHeight) + 1, JUMP_BLOCK_HIT)
+            if self.map:tileAt(self.x + self.width - 1, self.y).id == JUMP_BLOCK then
+                self.map:setTile(math.floor((self.x + self.width - 1) / self.map.tileWidth) + 1,
+                    math.floor(self.y / self.map.tileHeight) + 1, JUMP_BLOCK_HIT)
+                playCoin = true
+            else
+                playHit = true
+            end
+
+            if playCoin then
+                self.sounds['coin']:play()
+            elseif playHit then
+                self.sounds['hit']:play()
             end
         end
     end
-
 end
 
 -- check two tiles to our left to see if a collision occured
