@@ -2,8 +2,6 @@
 --[[ contains tile data and necessary code for rendering a tile]]
 require 'Util'
 
-require 'Player'
-
 Map = Class{}
 
 -- bricks tiles
@@ -44,17 +42,15 @@ function Map:init()
 
     -- applies positive Y influence on anything affected
     self.gravity = 15
+        
+    -- associate player with map
+    self.player = Player(self)
 
     -- camera offset
     self.camX = 0
     self.camY = -3
 
-    self.player = Player(self)
-
-    -- generate a quad (individual frame / sprite) for each tile
-    self.tileSprites = generateQuads(self.spritesheet, self.tileWidth, self.tileHeight)
-
-    -- cache width and height of map in pixels
+        -- cache width and height of map in pixels
     self.mapWidthPixels = self.mapWidth * self.tileWidth
     self.mapHeightPixels = self.mapHeight * self.tileHeight
 
@@ -137,14 +133,6 @@ function Map:init()
         end
     end
 
-    
-    -- Starts halfway down the map, populates with bricks
-    for y = self.mapHeight / 2, self.mapHeight do 
-        for x = 1, self.mapWidth do
-            self:setTile(x, y, TILE_BRICK)
-        end
-    end
-
     -- start the background music
     self.music:setLooping(true)
     self.music:setVolume(0.25)
@@ -179,9 +167,13 @@ function Map:update(dt)
    
 end
 
--- gets the tile type at the given pixel coordinate
+-- gets the tile type at a given pixel coordinate
 function Map:tileAt(x, y)
-    return self.getTile(math.floor(x / self.tileWidth) + 1, math.floor(y / self.tileHeight) + 1)
+    return {
+        x = math.floor(x / self.tileWidth) + 1,
+        y = math.floor(y / self.tileHeight) + 1,
+        id = self:getTile(math.floor(x / self.tileWidth) + 1, math.floor(y / self.tileHeight) + 1)
+    }
 end
 
 -- returns an integer for the title at the given x-y coordinate
@@ -190,8 +182,8 @@ function Map:getTile(x, y)
 end
 
 -- sets a title at the given x-y coordinate to an integer value
-function Map:setTile(x, y, tile)
-    self.tiles[(y - 1) * self.mapWidth + x] = tile
+function Map:setTile(x, y, id)
+    self.tiles[(y - 1) * self.mapWidth + x] = id
 end
 
 -- renders our map to the screen, to be called by main's render
@@ -199,9 +191,10 @@ function Map:render()
 
     for y = 1, self.mapHeight do
         for x = 1, self.mapWidth do 
-            if self:getTile(x, y) ~= TILE_EMPTY then
-            love.graphics.draw(self.spritesheet, self.tileSprites [self: getTile(x, y)],
-            (x - 1 ) * self.tileWidth, (y -1) * self.tileHeight)
+            local tile = self:getTile(x, y)
+            if tile ~= TILE_EMPTY then
+                love.graphics.draw(self.spritesheet, self.sprites[tile],
+                    (x - 1) * self.tileWidth, (y - 1) * self.tileHeight)
             end
         end
     end
